@@ -1,20 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-const categories = [
-  { id: "breakfast", label: "Breakfast" },
-  { id: "lunch", label: "Lunch" },
-  { id: "dinner", label: "Dinner" },
-  { id: "snacks", label: "Snacks" },
-]
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const dietaryPreferences = [
   { id: "vegan", label: "Vegan" },
@@ -36,24 +30,20 @@ const sortOptions = [
 ]
 
 export function MealFilters() {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedDiets, setSelectedDiets] = useState<string[]>([])
-  const [calorieRange, setCalorieRange] = useState([200, 800])
+  const [calorieMin, setCalorieMin] = useState("200")
+  const [calorieMax, setCalorieMax] = useState("800")
   const [sortBy, setSortBy] = useState(sortOptions[0])
   const [isFilterOpen, setIsFilterOpen] = useState(true)
-
-  const toggleCategory = (id: string) => {
-    setSelectedCategories((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
-  }
 
   const toggleDiet = (id: string) => {
     setSelectedDiets((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
   }
 
   const clearFilters = () => {
-    setSelectedCategories([])
     setSelectedDiets([])
-    setCalorieRange([200, 800])
+    setCalorieMin("200")
+    setCalorieMax("800")
   }
 
   return (
@@ -78,38 +68,12 @@ export function MealFilters() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[180px]">
                 {sortOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.id}
-                    onClick={() => setSortBy(option)}
-                    className="flex items-center justify-between"
-                  >
+                  <DropdownMenuItem key={option.id} onClick={() => setSortBy(option)}>
                     {option.label}
-                    {sortBy.id === option.id && <Check className="h-4 w-4" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-
-          <div>
-            <h3 className="font-medium mb-3">Categories</h3>
-            <div className="space-y-2">
-              {categories.map((category) => (
-                <div key={category.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`category-${category.id}`}
-                    checked={selectedCategories.includes(category.id)}
-                    onCheckedChange={() => toggleCategory(category.id)}
-                  />
-                  <label
-                    htmlFor={`category-${category.id}`}
-                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {category.label}
-                  </label>
-                </div>
-              ))}
-            </div>
           </div>
 
           <Separator />
@@ -138,20 +102,37 @@ export function MealFilters() {
           <Separator />
 
           <div>
-            <div className="flex justify-between items-center mb-3">
+            <div className="mb-3">
               <h3 className="font-medium">Calories</h3>
-              <span className="text-sm text-muted-foreground">
-                {calorieRange[0]} - {calorieRange[1]}
-              </span>
+              <p className="text-sm text-muted-foreground mt-1">Set a calorie range</p>
             </div>
-            <Slider
-              defaultValue={calorieRange}
-              min={100}
-              max={1000}
-              step={50}
-              onValueChange={setCalorieRange}
-              className="py-4"
-            />
+            <div className="flex items-center gap-2">
+              <div className="space-y-2 flex-1">
+                <Label htmlFor="calorie-min" className="text-xs">
+                  Min
+                </Label>
+                <Input
+                  id="calorie-min"
+                  type="number"
+                  value={calorieMin}
+                  onChange={(e) => setCalorieMin(e.target.value)}
+                  className="rounded-md"
+                />
+              </div>
+              <div className="pt-6">-</div>
+              <div className="space-y-2 flex-1">
+                <Label htmlFor="calorie-max" className="text-xs">
+                  Max
+                </Label>
+                <Input
+                  id="calorie-max"
+                  type="number"
+                  value={calorieMax}
+                  onChange={(e) => setCalorieMax(e.target.value)}
+                  className="rounded-md"
+                />
+              </div>
+            </div>
           </div>
 
           <Button variant="outline" size="sm" onClick={clearFilters} className="w-full">
